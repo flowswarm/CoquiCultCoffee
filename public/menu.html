@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/assets/logo.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Products - Coqui Cult Coffee</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@200;400;600;800&family=Dancing+Script:wght@700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    /* Specific styles for the product menu page */
+    .menu-page {
+      padding-top: 100px;
+      padding-bottom: 80px;
+      background-color: #050505; /* Deep dark background */
+      min-height: 100vh;
+      position: relative;
+      z-index: 10;
+    }
+    
+    /* CRT/Film Grain Overlays */
+    .film-grain {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+        opacity: 0.05;
+        pointer-events: none;
+        z-index: 9999;
+    }
+    
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      row-gap: 40px;
+      column-gap: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+    @media (max-width: 1024px) {
+      .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+        column-gap: 20px;
+      }
+    }
+    @media (max-width: 768px) {
+      .product-grid {
+        grid-template-columns: 1fr;
+        padding: 0 1.5rem;
+      }
+    }
+    
+    .product-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(15, 15, 15, 0.8);
+      border: 1px solid #C49A6C;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(196, 154, 108, 0.2);
+    }
+    .product-image {
+      width: 100%;
+      height: auto;
+      max-height: 600px;
+      object-fit: contain;
+      border-bottom: 1px solid rgba(196, 154, 108, 0.3);
+    }
+    
+    .product-content {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    
+    .product-title {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.8rem;
+      color: #C49A6C;
+      text-align: center;
+      margin: 0 0 0.5rem 0;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .product-desc {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem;
+      color: #ffffff;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-weight: 500;
+      line-height: 1.6;
+      margin: 0 0 1rem 0;
+    }
+    .product-price {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: #ffffff;
+      text-align: center;
+      margin: 0;
+      font-weight: 400;
+    }
+
+    /* Floating Cart Button */
+    .floating-cart-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 65px;
+      height: 65px;
+      background-color: #C49A6C;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+      z-index: 1000;
+      transition: transform 0.3s ease;
+    }
+    .floating-cart-btn:hover {
+      transform: scale(1.1);
+    }
+    .cart-icon {
+      font-size: 1.8rem;
+      color: #000;
+    }
+    .cart-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background-color: #ff3b3b;
+      color: white;
+      font-size: 0.8rem;
+      font-weight: bold;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Modals & Drawer Overlays */
+    .overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(5px);
+      z-index: 2000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Customization Modal */
+    .custom-modal {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -40%);
+      background: #111;
+      border: 1px solid #C49A6C;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      z-index: 2001;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+    }
+    .custom-modal.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, -50%);
+    }
+    .modal-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid rgba(196, 154, 108, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-title {
+      font-family: 'Playfair Display', serif;
+      color: #C49A6C;
+      font-size: 1.5rem;
+      margin: 0;
+      font-style: italic;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 2rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0;
+    }
+    .modal-body {
+      padding: 1.5rem;
+    }
+    .modal-image {
+      width: 100%;
+      height: 200px;
+      object-fit: contain;
+      margin-bottom: 1rem;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .form-label {
+      font-family: 'Inter', sans-serif;
+      color: #C49A6C;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    .form-select {
+      width: 100%;
+      background: #000;
+      color: #fff;
+      border: 1px solid rgba(196, 154, 108, 0.5);
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      outline: none;
+    }
+    .form-select:focus {
+      border-color: #C49A6C;
+    }
+    .modal-footer {
+      padding: 1.5rem;
+      border-top: 1px solid rgba(196, 154, 108, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .add-to-cart-btn {
+      background: #C49A6C;
+      color: #000;
+      border: none;
+      padding: 0.75rem 2rem;
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s ease;
+    }
+    .add-to-cart-btn:hover {
+      background: #d4b08c;
+    }
+    
+    /* Cart Drawer */
+    .cart-drawer {
+      position: fixed;
+      top: 0; right: 0;
+      width: 100%;
+      max-width: 400px;
+      height: 100vh;
+      background: #0a0a0a;
+      border-left: 1px solid #C49A6C;
+      z-index: 2002;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      display: flex;
+      flex-direction: column;
+    }
+    .cart-drawer.active {
+      transform: translateX(0);
+    }
+    .cart-items {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+    }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(196, 154, 108, 0.2);
+      padding-bottom: 1rem;
+      margin-bottom: 1rem;
+    }
+    .cart-item-details h4 {
+      margin: 0 0 0.25rem 0;
+      color: #C49A6C;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+    }
+    .cart-item-details p {
+      margin: 0;
+      font-size: 0.75rem;
+      color: #ccc;
+      font-family: 'Inter', sans-serif;
+      line-height: 1.4;
+    }
+    .cart-item-price {
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      color: #fff;
+    }
+    .remove-item {
+      background: none; border: none; color: #ff3b3b; cursor: pointer; font-size: 0.75rem; margin-top: 0.5rem; text-decoration: underline; padding: 0; font-family: 'Inter', sans-serif;
+    }
+    .cart-footer {
+      padding: 1.5rem;
+      border-top: 1px solid rgba(196, 154, 108, 0.2);
+      background: #111;
+    }
+    .cart-total-row {
+      display: flex;
+      justify-content: space-between;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    .checkout-btn {
+      width: 100%;
+      background: #C49A6C;
+      color: #000;
+      border: none;
+      padding: 1rem;
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: background 0.3s ease;
+    }
+    .checkout-btn:hover {
+      background: #d4b08c;
+    }
+    .checkout-btn:disabled {
+      background: #555;
+      color: #888;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <!-- CRT Overlays -->
+  <div class="film-grain"></div>
+  <div class="scanlines"></div>
+  <div class="vignette"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo-text">COQUÍ CULT</div>
+    <div class="nav-links">
+      <a href="/index.html">Home</a>
+      <a href="/menu.html">Menu</a>
+      <a href="/index.html#about">About</a>
+    </div>
+  </nav>
+
+  <main class="menu-page">
+    <div class="menu-video-container" style="max-width: 1400px; margin: 0 auto 4rem auto; padding: 0 2rem; border-radius: 16px; overflow: hidden;">
+      <video autoplay loop muted playsinline style="width: 100%; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.8);">
+        <source src="/assets/Twilight_Hero_Subtitled.mp4" type="video/mp4">
+      </video>
+    </div>
+
+    <div class="product-grid" id="product-grid">
+      <!-- Cards will be populated by JS -->
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <h2>Join the Cult.</h2>
+      <p>Philadelphia, PA</p>
+      <a href="https://www.instagram.com/coquicultcoffee/" target="_blank" class="ig-link">@coquicultcoffee</a>
+      <br><a href="/admin.html" style="font-size:0.7rem; color:#555; text-decoration:none; margin-top:10px; display:inline-block; transition: color 0.3s;" onmouseover="this.style.color='#C49A6C'" onmouseout="this.style.color='#555'">Admin</a>
+    </div>
+  </footer>
+
+  <!-- Ordering System UI -->
+  <div class="overlay" id="overlay" onclick="closeAllModals()"></div>
+
+  <!-- Customization Modal -->
+  <div class="custom-modal" id="customModal">
+    <div class="modal-header">
+      <h3 class="modal-title" id="modalTitle">Drink Name</h3>
+      <button class="close-btn" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <img id="modalImage" class="modal-image" src="" alt="">
+      <p id="modalDesc" class="product-desc" style="color:#ccc;"></p>
+      
+      <div class="form-group">
+        <label class="form-label">Size</label>
+        <select class="form-select" id="optSize" onchange="updateModalPrice()">
+          <option value="0">Regular</option>
+          <option value="1.00">Large (+$1.00)</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Temperature</label>
+        <select class="form-select" id="optTemp" onchange="updateModalPrice()">
+          <option value="0">Hot</option>
+          <option value="0.50">Iced (+$0.50)</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Milk</label>
+        <select class="form-select" id="optMilk" onchange="updateModalPrice()">
+          <option value="0">Whole Milk</option>
+          <option value="0">Skim Milk</option>
+          <option value="0.75">Almond Milk (+$0.75)</option>
+          <option value="0.75">Oat Milk (+$0.75)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Espresso</label>
+        <select class="form-select" id="optShots" onchange="updateModalPrice()">
+          <option value="0">Regular</option>
+          <option value="1.00">Extra Shot (+$1.00)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Notes / Special Instructions</label>
+        <textarea id="optNotes" style="width:100%; box-sizing:border-box; background:#000; color:#fff; border: 1px solid rgba(196, 154, 108, 0.5); padding: 0.75rem; border-radius: 8px; font-family:'Inter', sans-serif; resize:vertical; min-height:60px; outline:none;" placeholder="Any special requests? (e.g. extra hot, light ice)" onfocus="this.style.borderColor='#C49A6C'" onblur="this.style.borderColor='rgba(196, 154, 108, 0.5)'"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <span class="product-price" id="modalPrice" style="font-size: 2rem;">$6.50</span>
+      <button class="add-to-cart-btn" onclick="addToCart()">Add to Cart</button>
+    </div>
+  </div>
+
+  <!-- Cart Drawer -->
+  <div class="cart-drawer" id="cartDrawer">
+    <div class="modal-header">
+      <h3 class="modal-title">Your Order</h3>
+      <button class="close-btn" onclick="toggleCart()">×</button>
+    </div>
+    <div class="cart-items" id="cartItems">
+      <!-- Items dynamically populated -->
+    </div>
+    <div class="cart-footer">
+      <div class="cart-total-row">
+        <span>Total</span>
+        <span id="cartTotal">$0.00</span>
+      </div>
+      <button class="checkout-btn" id="checkoutBtn" onclick="checkout()">Checkout</button>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="custom-modal" id="successModal">
+    <div class="modal-body" style="text-align: center; padding: 3rem 1.5rem;">
+      <h2 style="color: #C49A6C; font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 1rem;">Order Confirmed!</h2>
+      <p style="color: #fff; font-family: 'Inter', sans-serif; font-size: 1rem; line-height: 1.6; margin-bottom: 2rem;">
+        Your payment was processed successfully. We're getting your order ready.
+      </p>
+      <div style="background: #1a1a1a; padding: 1.5rem; border-radius: 8px; border: 1px solid rgba(196, 154, 108, 0.3);">
+        <p style="color: #C49A6C; font-family: 'Inter', sans-serif; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; margin: 0 0 0.5rem 0;">Pickup Location</p>
+        <p style="color: #fff; font-family: 'Inter', sans-serif; font-size: 1.1rem; margin: 0;">Philadelphia, PA</p>
+      </div>
+      <button class="add-to-cart-btn" style="margin-top: 2rem; width: 100%;" onclick="closeSuccessModal()">Close</button>
+    </div>
+  </div>
+
+  <!-- Floating Cart Button -->
+  <div class="floating-cart-btn" onclick="toggleCart()">
+    <span class="cart-icon">🛒</span>
+    <div class="cart-badge" id="cartBadge">0</div>
+  </div>
+
+  <script>
+    let currentProduct = null;
+    let cart = [];
+
+    const products = [
+      { name: "Coquito", basePrice: 6.50, file: "Coquito.jpg", desc: "coconut cream, cinnamon, nutmeg, condensed milk" },
+      { name: "Guava Cheesecake", basePrice: 6.50, file: "Guava Cheesecake.jpg", desc: "guava syrup, cream cheese foam, graham cracker dust" },
+      { name: "Cookie Batter Latte", basePrice: 6.50, file: "Cookie Batter Latte.jpg", desc: "biscoff spread, cinnamon, brown sugar, whole milk" },
+      { name: "Banana Pudding Latte", basePrice: 6.50, file: "Banana Pudding Latte.jpg", desc: "banana milk, vanilla wafer rim, sweet foam" },
+      { name: "Café del Mar", basePrice: 6.50, file: "Cafe Del Mar.jpg", desc: "sea salt caramel, blonde espresso, oat milk" },
+      { name: "Coquí Caramelo", basePrice: 6.50, file: "Coqui Caramelo.jpg", desc: "dulce de leche, toasted marshmallow, dark espresso" },
+      { name: "Nutellita", basePrice: 6.50, file: "Nutellita.jpg", desc: "nutella, hazelnut, cocoa dust, milk" }
+    ];
+
+    const grid = document.getElementById('product-grid');
+    
+    products.forEach((p, index) => {
+      const card = document.createElement('div');
+      card.className = 'product-card';
+      // Make card clickable to open customization modal
+      card.onclick = () => openModal(index);
+      
+      const img = document.createElement('img');
+      img.className = 'product-image';
+      img.src = '/assets/products/' + p.file;
+      img.alt = p.name;
+      
+      const content = document.createElement('div');
+      content.className = 'product-content';
+
+      const title = document.createElement('h3');
+      title.className = 'product-title';
+      title.textContent = p.name;
+
+      const desc = document.createElement('p');
+      desc.className = 'product-desc';
+      desc.textContent = p.desc;
+
+      const price = document.createElement('span');
+      price.className = 'product-price';
+      price.textContent = "$" + p.basePrice.toFixed(2);
+
+      content.appendChild(title);
+      content.appendChild(desc);
+      content.appendChild(price);
+
+      card.appendChild(img);
+      card.appendChild(content);
+      grid.appendChild(card);
+    });
+
+    // Modal & Cart Logic
+    function openModal(index) {
+      currentProduct = products[index];
+      document.getElementById('modalTitle').textContent = currentProduct.name;
+      document.getElementById('modalImage').src = '/assets/products/' + currentProduct.file;
+      document.getElementById('modalDesc').textContent = currentProduct.desc;
+      
+      // Reset selections
+      document.getElementById('optSize').selectedIndex = 0;
+      document.getElementById('optTemp').selectedIndex = 0;
+      document.getElementById('optMilk').selectedIndex = 0;
+      document.getElementById('optShots').selectedIndex = 0;
+      document.getElementById('optNotes').value = '';
+
+      updateModalPrice();
+      
+      document.getElementById('overlay').classList.add('active');
+      document.getElementById('customModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('customModal').classList.remove('active');
+      checkOverlay();
+      currentProduct = null;
+    }
+
+    function updateModalPrice() {
+      if(!currentProduct) return;
+      let price = currentProduct.basePrice;
+      price += parseFloat(document.getElementById('optSize').value);
+      price += parseFloat(document.getElementById('optTemp').value);
+      price += parseFloat(document.getElementById('optMilk').value);
+      price += parseFloat(document.getElementById('optShots').value);
+      document.getElementById('modalPrice').textContent = "$" + price.toFixed(2);
+    }
+
+    function addToCart() {
+      const sizeSel = document.getElementById('optSize');
+      const tempSel = document.getElementById('optTemp');
+      const milkSel = document.getElementById('optMilk');
+      const shotsSel = document.getElementById('optShots');
+
+      let price = currentProduct.basePrice;
+      price += parseFloat(sizeSel.value);
+      price += parseFloat(tempSel.value);
+      price += parseFloat(milkSel.value);
+      price += parseFloat(shotsSel.value);
+
+      const notesInput = document.getElementById('optNotes').value.trim();
+
+      // Clean up display strings (ignore standard options)
+      const customizations = [
+        sizeSel.options[sizeSel.selectedIndex].text,
+        tempSel.options[tempSel.selectedIndex].text,
+        milkSel.options[milkSel.selectedIndex].text,
+        shotsSel.options[shotsSel.selectedIndex].text
+      ].filter(t => !t.includes('Regular') && !t.includes('Whole Milk') && !t.includes('Skim Milk') && !t.includes('Hot'));
+
+      if (notesInput) {
+        customizations.push(`Notes: ${notesInput}`);
+      }
+
+      cart.push({
+        name: currentProduct.name,
+        price: price,
+        customizations: customizations.length > 0 ? customizations.join(', ') : 'Standard'
+      });
+
+      closeModal();
+      updateCartUI();
+      
+      // Pop open the cart drawer to show it was added
+      setTimeout(() => toggleCart(true), 300);
+    }
+
+    function toggleCart(forceOpen = false) {
+      const drawer = document.getElementById('cartDrawer');
+      const overlay = document.getElementById('overlay');
+      
+      if (forceOpen === true || !drawer.classList.contains('active')) {
+        drawer.classList.add('active');
+        overlay.classList.add('active');
+        document.getElementById('customModal').classList.remove('active');
+        document.getElementById('successModal').classList.remove('active');
+      } else {
+        drawer.classList.remove('active');
+        checkOverlay();
+      }
+    }
+
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      const badge = document.getElementById('cartBadge');
+      badge.textContent = cart.length;
+
+      const itemsContainer = document.getElementById('cartItems');
+      itemsContainer.innerHTML = '';
+
+      let total = 0;
+
+      cart.forEach((item, index) => {
+        total += item.price;
+        const el = document.createElement('div');
+        el.className = 'cart-item';
+        el.innerHTML = `
+          <div class="cart-item-details">
+            <h4>${item.name}</h4>
+            <p>${item.customizations}</p>
+            <button class="remove-item" onclick="removeFromCart(${index})">Remove</button>
+          </div>
+          <div class="cart-item-price">$${item.price.toFixed(2)}</div>
+        `;
+        itemsContainer.appendChild(el);
+      });
+
+      document.getElementById('cartTotal').textContent = "$" + total.toFixed(2);
+      
+      const btn = document.getElementById('checkoutBtn');
+      btn.disabled = cart.length === 0;
+      
+      if(cart.length === 0) {
+        itemsContainer.innerHTML = '<p style="color:#888; text-align:center; margin-top:2rem; font-family:\'Inter\',sans-serif;">Your cart is empty.</p>';
+      }
+    }
+
+    async function checkout() {
+      if(cart.length === 0) return;
+      const btn = document.getElementById('checkoutBtn');
+      btn.textContent = "Redirecting to secure checkout...";
+      btn.disabled = true;
+
+      try {
+        const response = await fetch('/api/checkout/create-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cart: cart })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.url) {
+            window.location.href = data.url;
+        } else {
+            alert('Checkout failed: ' + (data.error || 'Please ensure Stripe is configured in the Admin portal.'));
+            btn.textContent = "Checkout";
+            btn.disabled = false;
+        }
+      } catch (err) {
+        alert('Failed to connect to checkout service.');
+        btn.textContent = "Checkout";
+        btn.disabled = false;
+      }
+    }
+
+    function closeSuccessModal() {
+      document.getElementById('successModal').classList.remove('active');
+      checkOverlay();
+    }
+
+    function closeAllModals() {
+      document.getElementById('customModal').classList.remove('active');
+      document.getElementById('cartDrawer').classList.remove('active');
+      document.getElementById('successModal').classList.remove('active');
+      document.getElementById('overlay').classList.remove('active');
+    }
+    
+    function checkOverlay() {
+      // If no modals are active, turn off overlay
+      if(!document.getElementById('customModal').classList.contains('active') && 
+         !document.getElementById('cartDrawer').classList.contains('active') && 
+         !document.getElementById('successModal').classList.contains('active')) {
+         document.getElementById('overlay').classList.remove('active');
+      }
+    }
+
+    // Initialize
+    updateCartUI();
+  </script>
+</body>
+</html>

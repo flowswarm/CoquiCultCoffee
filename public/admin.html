@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/assets/logo.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Portal - Coqui Cult Coffee</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    body { background-color: #050505; color: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    
+    .film-grain {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+        opacity: 0.05;
+        pointer-events: none;
+        z-index: 9999;
+    }
+    
+    .admin-container {
+      width: 100%;
+      max-width: 450px;
+      padding: 2.5rem 2rem;
+      background: #111;
+      border: 1px solid #C49A6C;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      position: relative;
+      z-index: 10;
+    }
+    
+    .dashboard-container {
+      width: 100%;
+      max-width: 800px;
+      padding: 2rem;
+      background: transparent;
+      display: none;
+      position: relative;
+      z-index: 10;
+      margin-top: 2rem;
+    }
+
+    h1, h2, h3 { font-family: 'Playfair Display', serif; color: #C49A6C; margin-top: 0; }
+    p, label { font-family: 'Inter', sans-serif; }
+    
+    .form-group { margin-bottom: 1.5rem; }
+    label { display: block; margin-bottom: 0.5rem; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; color: #ccc; }
+    input[type="text"], input[type="password"], input[type="email"] {
+      width: 100%;
+      padding: 0.85rem;
+      background: #000;
+      border: 1px solid rgba(196, 154, 108, 0.5);
+      border-radius: 8px;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+    }
+    input:focus { outline: none; border-color: #C49A6C; }
+    
+    .btn {
+      width: 100%;
+      padding: 1rem;
+      background: #C49A6C;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.1s ease;
+    }
+    .btn:hover { background: #d4b08c; }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { background: #555; color: #888; cursor: not-allowed; transform: none; }
+    
+    .error-msg { color: #ff3b3b; font-size: 0.85rem; margin-top: 0.5rem; display: none; }
+    
+    .dashboard-card {
+      background: #111;
+      border: 1px solid rgba(196, 154, 108, 0.3);
+      border-radius: 12px;
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1.5rem;
+    }
+    .status-disconnected { background: rgba(255, 59, 59, 0.15); color: #ff5555; border: 1px solid #ff3b3b; }
+    .status-connected { background: rgba(76, 175, 80, 0.15); color: #55ff55; border: 1px solid #4caf50; }
+    
+    .success-msg {
+      color: #55ff55;
+      font-size: 0.85rem;
+      margin-top: 1rem;
+      display: none;
+      font-family: 'Inter', sans-serif;
+    }
+    @media (max-width: 480px) {
+      .admin-container {
+        padding: 1.5rem 1rem;
+        margin: 1rem;
+      }
+      .dashboard-container {
+        padding: 1rem;
+      }
+      .dashboard-card {
+        padding: 1.5rem;
+      }
+      h1 {
+        font-size: 2rem !important;
+      }
+      .btn {
+        padding: 0.85rem;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="film-grain"></div>
+
+  <!-- Login Screen -->
+  <div class="admin-container" id="loginContainer">
+    <div style="text-align: center; margin-bottom: 2.5rem;">
+      <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Admin Portal</h1>
+      <p style="color: #888; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em;">Authorized Personnel Only</p>
+    </div>
+    
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" id="username" placeholder="Enter username">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="password" placeholder="Enter password">
+      <div class="error-msg" id="loginError">Invalid credentials.</div>
+    </div>
+    
+    <button class="btn" style="margin-top: 1rem;" onclick="attemptLogin()" id="loginBtn">Login</button>
+  </div>
+
+  <!-- Dashboard Screen -->
+  <div class="dashboard-container" id="dashboardContainer">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2.5rem;">
+      <div>
+        <h1 style="font-size: 3rem; margin: 0; line-height: 1;">Dashboard</h1>
+        <p style="color: #888; margin: 0.5rem 0 0 0;">Welcome back, Admin.</p>
+      </div>
+      <a href="/index.html" style="color: #C49A6C; text-decoration: none; font-family: 'Inter', sans-serif; border-bottom: 1px solid #C49A6C; padding-bottom: 2px;">&larr; Back to Site</a>
+    </div>
+    
+    <!-- Stripe Mockup -->
+    <div class="dashboard-card">
+      <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem;">Payment Processor</h2>
+      <p style="color: #aaa; margin-bottom: 1.5rem; line-height: 1.5;">Provide your Stripe Secret Key to process orders securely.</p>
+      
+      <div id="stripeStatus" class="status-badge status-disconnected">🔴 Disconnected</div>
+      
+      <div class="form-group">
+        <label>Stripe Secret Key (sk_test_... or sk_live_...)</label>
+        <input type="password" id="stripeSecretKey" placeholder="Paste your Stripe Secret Key here">
+      </div>
+    </div>
+    
+    <!-- Email Notification Mockup -->
+    <div class="dashboard-card">
+      <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem;">Order Notifications</h2>
+      <p style="color: #aaa; margin-bottom: 1.5rem; line-height: 1.5;">Configure the Gmail address and App Password that will be used to send and receive new order alerts.</p>
+      
+      <div class="form-group">
+        <label>Gmail Address</label>
+        <input type="email" id="adminEmail" placeholder="e.g. orders@coquicult.com">
+      </div>
+
+      <div class="form-group">
+        <label>Gmail App Password</label>
+        <input type="password" id="gmailPassword" placeholder="16-digit App Password">
+      </div>
+    </div>
+
+    <button class="btn" id="saveSettingsBtn" style="padding: 1rem; margin-bottom: 1rem;" onclick="saveSettings()">Save All Settings</button>
+    <div class="success-msg" id="settingsSuccess" style="text-align: center; font-size: 1rem; margin-bottom: 2rem;">🟢 Settings saved securely.</div>
+  </div>
+
+  <script>
+    // Check if already logged in on load
+    window.onload = async () => {
+        try {
+            const res = await fetch('/api/auth/check');
+            if(res.ok) {
+                showDashboard();
+            }
+        } catch(e) {}
+    };
+
+    async function attemptLogin() {
+      const user = document.getElementById('username').value;
+      const pass = document.getElementById('password').value;
+      const btn = document.getElementById('loginBtn');
+      
+      btn.disabled = true;
+      btn.textContent = "Logging in...";
+
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: user, password: pass })
+        });
+
+        if (response.ok) {
+          document.getElementById('loginError').style.display = 'none';
+          showDashboard();
+        } else {
+          showLoginError();
+        }
+      } catch (err) {
+        showLoginError();
+      }
+      
+      btn.disabled = false;
+      btn.textContent = "Login";
+    }
+
+    function showLoginError() {
+        document.getElementById('loginError').style.display = 'block';
+        const passInput = document.getElementById('password');
+        passInput.style.transform = "translateX(5px)";
+        setTimeout(() => passInput.style.transform = "translateX(-5px)", 50);
+        setTimeout(() => passInput.style.transform = "translateX(5px)", 100);
+        setTimeout(() => passInput.style.transform = "translateX(0)", 150);
+    }
+    
+    async function showDashboard() {
+        document.getElementById('loginContainer').style.display = 'none';
+        document.getElementById('dashboardContainer').style.display = 'block';
+        
+        // Fetch settings
+        try {
+            const res = await fetch('/api/settings');
+            const data = await res.json();
+            
+            if(data.email) document.getElementById('adminEmail').value = data.email;
+            
+            if(data.isStripeConnected) {
+                document.getElementById('stripeSecretKey').placeholder = "•••••••••••••••••••••••• (Key saved)";
+                document.getElementById('stripeStatus').className = "status-badge status-connected";
+                document.getElementById('stripeStatus').textContent = "🟢 Connected";
+            }
+            if(data.hasGmailPassword) {
+                document.getElementById('gmailPassword').placeholder = "•••••••••••••••• (App Password saved)";
+            }
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
+    async function saveSettings() {
+      const email = document.getElementById('adminEmail').value;
+      const stripeKey = document.getElementById('stripeSecretKey').value;
+      const gmailPass = document.getElementById('gmailPassword').value;
+      const btn = document.getElementById('saveSettingsBtn');
+      
+      btn.textContent = "Saving...";
+      btn.disabled = true;
+      document.getElementById('settingsSuccess').style.display = 'none';
+      
+      try {
+        const response = await fetch('/api/settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                adminEmail: email,
+                stripeSecretKey: stripeKey,
+                gmailPassword: gmailPass
+            })
+        });
+
+        if (response.ok) {
+            document.getElementById('settingsSuccess').style.display = 'block';
+            if (stripeKey.trim() !== '') {
+                document.getElementById('stripeStatus').className = "status-badge status-connected";
+                document.getElementById('stripeStatus').textContent = "🟢 Connected";
+            }
+            // clear passwords from input for security
+            document.getElementById('stripeSecretKey').value = '';
+            document.getElementById('gmailPassword').value = '';
+        }
+      } catch(e) {
+          alert('Failed to save settings');
+      }
+
+      btn.textContent = "Save All Settings";
+      btn.disabled = false;
+    }
+    
+    document.getElementById('password').addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') attemptLogin();
+    });
+  </script>
+</body>
+</html>

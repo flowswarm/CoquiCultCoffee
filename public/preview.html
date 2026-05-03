@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body { background: #333; color: white; }
+img { max-width: 300px; max-height: 300px; border: 1px solid red; margin: 10px; background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAACVJREFUKFNjZCASMDKgA2NjY/wP0kFGEJ1MDIwM2MQYGBgYGEgEAFmPAQK+n9KNAAAAAElFTkSuQmCC'); }
+</style>
+</head>
+<body>
+    <h1>Preview Extracted Products</h1>
+    <div id="gallery"></div>
+    <script>
+        const products = [
+            'menu1_1_product_0_split_trimmed.png',
+            'menu1_2_product_0_split_trimmed.png',
+            'menu1_3_product_0_split_trimmed.png',
+            'menu2_1_product_0_split_trimmed.png',
+            'menu2_1_product_1_split_trimmed.png',
+            'menu2_1_product_2_split_trimmed.png',
+            'menu2_1_product_3_split_trimmed.png',
+            'menu2_1_product_4_split_trimmed.png',
+        ];
+        const g = document.getElementById('gallery');
+        products.forEach(p => {
+            const img = document.createElement('img');
+            img.src = '/assets/products/' + p;
+            img.alt = p;
+            img.onerror = () => {
+                img.src = '/assets/products/' + p.replace('_split_trimmed.png', '.png');
+            }
+            g.appendChild(img);
+        });
+    </script>
+</body>
+</html>
