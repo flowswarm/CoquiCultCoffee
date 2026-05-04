@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/assets/logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About Us - Coquí Cult Coffee</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Outfit:wght@200;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+      .about-story {
+        max-width: 800px;
+        margin: -4rem auto 6rem auto;
+        padding: 0 2rem;
+        text-align: center;
+        position: relative;
+        z-index: 10;
+      }
+      .about-story p {
+        font-family: 'Inter', sans-serif;
+        font-size: 1.2rem;
+        line-height: 1.8;
+        color: #dcdcdc;
+        margin-bottom: 2rem;
+      }
+      .about-story strong {
+        color: #C49A6C;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .about-hero {
+        position: relative;
+        width: 100vw;
+        height: 60vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
+      .about-hero-bg {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        object-fit: cover;
+        opacity: 0.3;
+        z-index: 0;
+      }
+      .about-hero-overlay {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: linear-gradient(to bottom, transparent 0%, #050505 100%);
+        z-index: 1;
+      }
+      .about-hero-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+      }
+      .about-hero-content h1 {
+        font-family: 'Outfit', sans-serif;
+        font-size: 5rem;
+        font-weight: 200;
+        letter-spacing: 5px;
+        color: #fff;
+        margin: 0;
+      }
+      @media (max-width: 768px) {
+        .about-hero-content h1 { font-size: 3rem; }
+        .about-story p { font-size: 1rem; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="logo-text">COQUÍ CULT</div>
+      <div class="nav-links">
+        <a href="/index.html">Home</a>
+        <a href="/menu.html">Menu</a>
+        <a href="/about.html">About</a>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="about-hero" id="home">
+      <video class="about-hero-bg" autoplay loop muted playsinline>
+        <source src="/assets/newhero.mp4" type="video/mp4">
+      </video>
+      <div class="about-hero-overlay"></div>
+      
+      <div class="about-hero-content">
+        <h1 class="reveal-text">BORN IN THE SHADOWS</h1>
+      </div>
+    </section>
+
+    <!-- Story Section -->
+    <section class="about-story">
+      <p class="reveal-text">
+        Welcome to the cult. We are a <strong>Puerto Rican Owned</strong> and operated home-based café rooted deeply in the heart of Philadelphia. 
+      </p>
+      <p class="reveal-text">
+        What started as an obsession with the perfect, dark roast has evolved into an exclusive, small-batch coffee experience. We operate from the shadows, prioritizing quality and unique, curated aesthetics over commercial volume. From our signature <em>Flan de Queso</em> lattes to our classic <em>Coquito</em> blends, every cup is crafted with authentic flavor and a dark, cinematic twist.
+      </p>
+    </section>
+
+    <!-- Showcase / Gallery Section -->
+    <section class="showcase" id="gallery" style="padding-top: 2rem;">
+      <div class="section-header">
+        <h2 class="reveal-text">THE ARCHIVE</h2>
+        <p class="reveal-text subtitle">Visuals & Concoctions</p>
+      </div>
+      <div class="gallery-container" id="gallery-container">
+        <!-- Injected via main.js -->
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <h2>Join the Cult.</h2>
+        <p>Philadelphia, PA</p>
+        <a href="https://www.instagram.com/coquicultcoffee/" target="_blank" class="ig-link">@coquicultcoffee</a>
+        <br><a href="/admin.html" style="font-size:0.7rem; color:#555; text-decoration:none; margin-top:10px; display:inline-block; transition: color 0.3s;" onmouseover="this.style.color='#C49A6C'" onmouseout="this.style.color='#555'">Admin</a>
+      </div>
+    </footer>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
