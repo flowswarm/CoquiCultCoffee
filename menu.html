@@ -14,10 +14,27 @@
     .menu-page {
       padding-top: 100px;
       padding-bottom: 80px;
-      background-color: #050505; /* Deep dark background */
+      background-color: transparent; /* Deep dark background */
       min-height: 100vh;
       position: relative;
       z-index: 10;
+    }
+    
+    /* Background Video */
+    .global-bg-video {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      object-fit: cover;
+      z-index: 0;
+      opacity: 0.15;
+      pointer-events: none;
+    }
+    .bg-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: radial-gradient(circle at center, transparent 0%, #050505 100%);
+      z-index: 1;
+      pointer-events: none;
     }
     
     /* CRT/Film Grain Overlays */
@@ -365,6 +382,12 @@
   </style>
 </head>
 <body>
+  <!-- Background Video -->
+  <video autoplay loop muted playsinline class="global-bg-video">
+    <source src="/assets/menubgvid.mp4" type="video/mp4">
+  </video>
+  <div class="bg-overlay"></div>
+
   <!-- CRT Overlays -->
   <div class="film-grain"></div>
   <div class="scanlines"></div>
@@ -381,11 +404,7 @@
   </nav>
 
   <main class="menu-page">
-    <div class="menu-video-container" style="max-width: 1400px; margin: 0 auto 4rem auto; padding: 0 2rem; border-radius: 16px; overflow: hidden;">
-      <video autoplay loop muted playsinline style="width: 100%; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.8);">
-        <source src="/assets/Twilight_Hero_Subtitled.mp4" type="video/mp4">
-      </video>
-    </div>
+
 
     <div class="product-grid" id="product-grid">
       <!-- Cards will be populated by JS -->
